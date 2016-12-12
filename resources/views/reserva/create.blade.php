@@ -1,4 +1,5 @@
 @extends('layouts.layout')
+<meta name="csrf-token" content="{{ csrf_token() }}"/>
 @section('top')
     <h2>RESERVAS</h2>
     <div class="right-wrapper pull-right">
@@ -33,10 +34,10 @@
 														<span class="input-group-addon">
 															<i class="fa fa-calendar"></i>
 														</span>
-                                {!! Form::text('dat_inicio', null,['class'=>'form-control', 'id'=>'data']) !!}
+                                {!! Form::text('dat_inicio', null,['class'=>'form-control', 'id'=>'data', 'onchange' => 'javascript:getSalas()']) !!}
 
                                 <span class="input-group-addon">à</span>
-                                {!! Form::text('dat_termino', null,['class'=>'form-control']) !!}
+                                {!! Form::text('dat_termino', null,['class'=>'form-control', 'onchange' => 'javascript:getSalas()']) !!}
 
                             </div>
                         </div>
@@ -48,25 +49,25 @@
                         <span class="input-group-addon">
                             <i class="fa fa-clock-o"></i>
                         </span>
-                                {!! Form::text('nom_horario', null, ['class'=>'form-control', 'placeholder'=>'Ex: 2122']) !!}
+                                {!! Form::text('nom_horario', null, ['class'=>'form-control', 'placeholder'=>'Ex: 2122', 'onchange' => 'javascript:getSalas()']) !!}
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('reservas', 'Salas Disponíveis', [ 'class'=>'col-md-3 control-label']) !!}
-                        <div class="col-md-6">
-                            {{ Form::select('cod_sala', $sala_selects, null, ['class' => 'form-control input-sm mb-md']) }}
                         </div>
                     </div>
                     <div class="form-group">
                         {!! Form::label('data', 'Periodo',  [ 'class'=>'col-md-3 control-label']) !!}
                         <div class="col-md-6">
                             {!! Form::label('Manhã') !!}
-                            {!! Form::radio('nom_periodo', 'Manhã', false) !!}
+                            {!! Form::radio('nom_periodo', 'Manhã', ['onchange' => 'javascript:getSalas()']) !!}
                             {!! Form::label('Tarde') !!}
-                            {!! Form::radio('nom_periodo', 'Tarde', false) !!}
+                            {!! Form::radio('nom_periodo', 'Tarde', ['onchange' => 'javascript:getSalas()']) !!}
                             {!! Form::label('Noite') !!}
-                            {!! Form::radio('nom_periodo', 'Noite', false) !!}
+                            {!! Form::radio('nom_periodo', 'Noite', ['onchange' => 'javascript:getSalas()']) !!}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('reservas', 'Salas Disponíveis', [ 'class'=>'col-md-3 control-label']) !!}
+                        <div class="col-md-6">
+                            {{ Form::select('cod_sala', array('Selecione Data, Horário e Periodo...'), null, ['class' => 'form-control input-sm mb-md']) }}
                         </div>
                     </div>
                     <div class="form-group">
@@ -83,4 +84,43 @@
             </section>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <script type="text/javascript">
+        function getSalas() {
+            var datini = $('[name=dat_inicio]').val();
+            var datfim = $('[name=dat_termino]').val();
+            var nomhor = $('[name=nom_horario]').val();
+            var nomper = $('[name=nom_periodo]:checked').val();
+
+            if (nomhor.length >= 2 && datini != '' && datfim != '' && nomper != '') {
+                $.ajax({
+                    url: '/reserva/getSalas',
+                    type: "POST",
+                    dataType: "json",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        nom_horario: nomhor,
+                        dat_inicio: datini,
+                        dat_termino: datfim,
+                        nom_periodo: nomper
+                    },
+                    success: function (json) {
+                        $("[name=cod_sala]")
+                                .find('option')
+                                .remove()
+                                .end();
+                        $.each(json, function () {
+                            $("[name=cod_sala]")
+                                    .append('<option value="' + this.cod_sala + '">' + this.nom_sala + '</option>')
+                        });
+                    }
+                });
+            }
+        }
+
+    </script>
 @stop

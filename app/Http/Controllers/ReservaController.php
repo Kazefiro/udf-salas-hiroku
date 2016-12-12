@@ -13,7 +13,8 @@ class ReservaController extends Controller
 {
     public function index()
     {
-        $reservas = Reserva::orderBy('cod_reserva','desc')
+        $reservas = Reserva::select('*', DB::raw("to_char(dat_inicio, 'DD/MM/YYYY') as dsc_dat_inicio"),
+            DB::raw("to_char(dat_termino, 'DD/MM/YYYY') as dsc_dat_termino"))->orderBy('cod_reserva','desc')
             ->leftJoin('salas', 'reservas.cod_sala', '=', 'salas.cod_sala')->get();
         return view('reserva.index')->with(compact('reservas'));
     }
@@ -106,5 +107,17 @@ class ReservaController extends Controller
         return redirect('/reserva');
     }
 
+    public function getSalas(Request $request )
+    {
+        $params = $request->all();
+        $arrHorarios = str_split($params['nom_horario'],2);
+        $strHorarios = implode('|', $arrHorarios);
+        $sala_selects = Sala::select(['cod_sala','nom_sala'])
+            ->whereRaw("cod_sala not in (select distinct cod_sala from udfsala.ofertas
+                        where cod_sala is not null and nom_periodo ilike '{$params['nom_periodo']}' and 
+            nom_horario similar to  '%({$strHorarios})%')")->get();
+
+        return json_encode( $sala_selects );
+    }
 
 }

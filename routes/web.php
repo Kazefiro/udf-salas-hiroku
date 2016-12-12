@@ -18,6 +18,7 @@ Route::group(['prefix'=>'reserva'], function (){
     Route::get('edit/{id}','ReservaController@edit');
     Route::put('update/{id}','ReservaController@update');
     Route::post('store','ReservaController@store');
+    Route::post('getSalas','ReservaController@getSalas');
     Route::get('delete/{id}','ReservaController@destroy');
 });
 

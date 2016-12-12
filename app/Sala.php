@@ -29,7 +29,7 @@ class Sala extends Model
         $return = self::select('cod_sala')
             ->whereRaw("cod_sala not in (select distinct cod_sala from udfsala.ofertas
                         where cod_sala is not null and nom_periodo ilike '{$periodo}' and 
-            nom_horario ilike '{$codDia}{$horario}')")->count();
+            nom_horario ilike '%{$codDia}{$horario}%')")->count();
 
         return $return;
     }

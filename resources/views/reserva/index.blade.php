@@ -30,8 +30,11 @@
                 <tr>
                     <th>CODIGO</th>
                     <th>Nº SALA</th>
+                    <th>HORÁRIO</th>
                     <th>PERIODO</th>
                     <th>CAMPUS</th>
+                    <th>INICIO</th>
+                    <th>FIM</th>
                     <th>AÇÕES</th>
                 </tr>
                 </thead>
@@ -40,8 +43,11 @@
                     <tr class="gradeX">
                         <td>{{$reserva->cod_reserva}}</td>
                         <td>{{$reserva->nom_sala}}</td>
+                        <td>{{$reserva->nom_horario}}</td>
                         <td>{{$reserva->nom_periodo}}</td>
                         <td>{{$reserva->campus_sala}}</td>
+                        <td>{{$reserva->dsc_dat_inicio}}</td>
+                        <td>{{$reserva->dsc_dat_termino}}</td>
                         <td>
                             <a type="button" class="btn btn-success btn-sm "   href="/reserva/edit/{{$reserva->cod_reserva}}">Editar</a>
                             <a type="button" class="btn btn-danger btn-sm "  href="/reserva/delete/{{$reserva->cod_reserva}}">Delete</a>

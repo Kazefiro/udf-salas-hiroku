@@ -30,12 +30,12 @@ class Reserva extends Model
         return self::count();
     }
 
-    public static function pegaReservasDoDia($periodo){
+    public static function pegaReservasDoDia($periodo, $horario){
         $codDia = date('N') + 1;
         $codDia = ($codDia == 7) ? 'S' : $codDia;
         return self::select('cod_sala')->where('nom_periodo', 'ilike', $periodo)
             ->whereRaw('current_date between dat_inicio and dat_termino')
-            ->whereRaw("nom_horario like any (array['{$codDia}0','{$codDia}1','{$codDia}2'])")->count();
+            ->whereRaw("nom_horario ilike '%{$codDia}{$horario}%'")->count();
     }
 
     public $timestamps = false;
